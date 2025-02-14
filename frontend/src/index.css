@@ -1,9 +1,77 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: InterVariable, sans-serif;
+
+--primary-blue: #2B7DE9;    /* Vibrant anchor color */
+--secondary-blue: #88B4E6;  /* Soft medium blue */
+--light-accent: #C3DEF7;    /* Matching gradient highlight */
+--dark-accent: #1A4D8F;     /* Deep contrast blue */
+
+/* Neutrals */
+--pure-white: #FFFFFF;      /* Clean background/UI elements */
+--soft-gray: #F5F9FC;       /* Slightly warmer than your gradient */
+--medium-gray: #94A3B8;     /* Neutral text/icon color */
+--dark-gray: #334155;       /* Secondary text color */
+
+/* Accents */
+--sunrise-orange: #FF6B35;  /* Complementary warm accent */
+--mint-green: #4DBD98;      /* Fresh accent color */
+--soft-lavender: #A5B4FC;   /* Subtle cool accent */
+
+/* System Colors */
+--success-green: #22C55E;   
+--error-red: #EF4444;       
+--warning-yellow: #F59E0B;
+}
+.primary-color{
+  background-color: #2B7DE9;
 }
 
-html{
-  background-color: #030712;
+.secondary-color {
+  background-color: #88B4E6;
 }
+
+.dark-color1{
+  background-color: #334155;
+}
+
+.dark-color2{
+  background-color: #1A4D8F;
+}
+
+.sunrise-color{
+  background-color: #ff6b35;
+}
+
+.success-color{
+  background-color: #22C55E;
+}
+
+.error-color{
+  background-color: #EF4444;
+}
+
+.warning-color{
+  background-color: #F59E0B;
+}
+
+
+html {
+  /* background-image: linear-gradient(to top, #accbee 0%, #e7f0fd 100%);   color: black; */
+}
+
+.background {
+  background-image: linear-gradient(to top, #accbee 0%, #e7f0fd 100%);
+  color: black;
+}
+
+input{
+  background-color: #F5F9FC;
+  padding: 12px 0;
+  text-indent: 8px;
+}
+
+input:focus{
+  outline: none;
+}
+
