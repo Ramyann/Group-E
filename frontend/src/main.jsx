@@ -18,6 +18,9 @@ const routes = createBrowserRouter(
     <Route path="/" element={<App />} errorElement={<Error />}>
       <Route index element={<Ceaser />} />
       <Route path="monoalphabetic" element={<Monoalphabetic />} />
+      <Route path="palyfair" element={<Monoalphabetic />} />
+      <Route path="hillciphering" element={<Monoalphabetic />} />
+      <Route path="polyalphabetic" element={<Monoalphabetic />} />
     </Route>
   ),
   {
