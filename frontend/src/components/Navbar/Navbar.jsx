@@ -16,6 +16,27 @@ const Navbar = ({}) => {
       >
         Monoalphabetic
       </Link>
+
+      <Link
+        to="/Playfair"
+        className="text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-sm font-medium"
+      >
+        Playfair
+      </Link>
+
+      <Link
+        to="/HillCiphering"
+        className="text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-sm font-medium"
+      >
+        HillCiphering
+      </Link>
+
+      <Link
+        to="/Polyalphabetic"
+        className="text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-sm font-medium"
+      >
+        Polyalphabetic
+      </Link>
     </nav>
   );
 };
