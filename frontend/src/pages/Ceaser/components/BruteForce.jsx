@@ -3,7 +3,6 @@ import { useState } from "react";
 
 function BruteForce({ ciphertext, setCiphertext }) {
   const [attackResults, setAttackResults] = useState([]);
-  const [decryptedText, setDecryptedText] = useState("");
 
   const handleAttack = async () => {
     try {
@@ -12,14 +11,12 @@ function BruteForce({ ciphertext, setCiphertext }) {
         { ciphertext }
       );
 
-      console.log(response);
+      console.log(response.data);
       setAttackResults(response.data.results);
     } catch (error) {
       console.error("Attack error:", error);
     }
   };
-
-  console.log(ciphertext);
 
   return (
     <div className="space-y-4">
@@ -58,18 +55,6 @@ function BruteForce({ ciphertext, setCiphertext }) {
           </ul>
         </div>
       )}
-
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Decrypted Text
-        </label>
-        <input
-          type="text"
-          value={decryptedText}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100"
-        />
-      </div>
     </div>
   );
 }

@@ -1,97 +1,34 @@
 import { useState } from "react";
-import axios from "axios";
+import Hint from "../../components/Hint";
+import MenuBar from "../../components/MenuBar";
+import Encryption from "./components/Encryption";
+import Decryption from "./components/Decryption";
+import BruteForce from "../Ceaser/components/BruteForce";
 
-function Monoalphabetic({}) {
-  const [plaintext, setPlaintext] = useState("");
+function Monoalphabetic({ }) {
   const [ciphertext, setCiphertext] = useState("");
-  const [shift, setShift] = useState(0);
-  const [decryptedText, setDecryptedText] = useState("");
 
-  const handleEncrypt = async () => {
-    try {
-      const response = await axios.post("/api/monoalphabetic/encrypt", {
-        plaintext,
-        shift,
-      });
-      setCiphertext(response.data.ciphertext);
-    } catch (error) {
-      console.error("Encryption error:", error);
-    }
-  };
-
-  const handleDecrypt = async () => {
-    try {
-      const response = await axios.post("/api/monoalphabetic/decrypt", {
-        ciphertext,
-        shift,
-      });
-      setDecryptedText(response.data.plaintext);
-    } catch (error) {
-      console.error("Decryption error:", error);
-    }
-  };
+  const [processType, setProcessType] = useState("encryption");
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md w-[80%] ">
-      <h2 className="text-2xl font-semibold mb-4">Monoalphabetic Cipher</h2>
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Plaintext
-          </label>
-          <input
-            type="text"
-            value={plaintext}
-            onChange={(e) => setPlaintext(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Shift Value
-          </label>
-          <input
-            type="number"
-            value={shift}
-            onChange={(e) => setShift(Number(e.target.value))}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          />
-        </div>
-        <button
-          onClick={handleEncrypt}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-        >
-          Encrypt
-        </button>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Ciphertext
-          </label>
-          <input
-            type="text"
-            value={ciphertext}
-            readOnly
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100"
-          />
-        </div>
-        <button
-          onClick={handleDecrypt}
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-        >
-          Decrypt
-        </button>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Decrypted Text
-          </label>
-          <input
-            type="text"
-            value={decryptedText}
-            readOnly
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100"
-          />
-        </div>
-      </div>
+    <div className="dark-color2 h-[80%] p-6 rounded-lg shadow-md w-[65%] overflow-hidden">
+
+      <span className="flex items-center gap-x-4  mb-8">
+        <h2 className="text-3xl font-bold text-white ">Monoalphabetic Cipher</h2>
+        <Hint
+          longText={`The Monoalphabetic Cipher is a classic encryption technique where each letter in the plaintext is replaced by a fixed, unique letter from the alphabet. Unlike the Caesar Cipher, which uses a uniform shift for all letters, the monoalphabetic cipher employs a scrambled or randomly rearranged alphabet for substitution. For example, if "A" is mapped to "Q," "B" to "W," and "C" to "E," the word "ABC" would encrypt to "QWE." This method offers more complexity than the Caesar Cipher because the substitution pattern is not based on a simple shift. However, despite its increased complexity, the monoalphabetic cipher is still vulnerable to cryptanalysis, particularly through frequency analysis, which exploits the predictable frequency of letters in a language (e.g., "E" is the most common letter in English). While it was a significant improvement over simpler ciphers, modern encryption methods have far surpassed its security.`}
+        />
+      </span>
+
+      <MenuBar processType={processType} setProcessType={setProcessType} />
+
+      {processType == "encryption" ? (
+        <Encryption ciphertext={ciphertext} setCiphertext={setCiphertext} />
+      ) : processType == "decryption" ? (
+        <Decryption ciphertext={ciphertext} setCiphertext={setCiphertext} />
+      ) : (
+        <BruteForce ciphertext={ciphertext} setCiphertext={setCiphertext} />
+      )}
     </div>
   );
 }
