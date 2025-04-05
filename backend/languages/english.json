@@ -43,33 +43,5 @@
     "not": 0.8,
     "on": 0.7,
     "with": 0.7
-  },
-  "bigram": {
-    "of the": 1.5,
-    "in the": 1.2,
-    "to the": 0.7,
-    "on the": 0.5,
-    "for the": 0.4,
-    "and the": 0.4,
-    "to be": 0.4,
-    "is a": 0.3,
-    "it is": 0.3,
-    "in a": 0.3,
-    "with the": 0.2,
-    "from the": 0.2
-  },
-  "trigram": {
-    "one of the": 0.2,
-    "a lot of": 0.15,
-    "the end of": 0.12,
-    "as well as": 0.11,
-    "be able to": 0.1,
-    "in order to": 0.09,
-    "part of the": 0.09,
-    "the rest of": 0.08,
-    "out of the": 0.08,
-    "going to be": 0.07,
-    "for the first": 0.07,
-    "at the end": 0.06
   }
 }
