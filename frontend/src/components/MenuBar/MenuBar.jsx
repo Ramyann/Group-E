@@ -2,7 +2,7 @@ function MenuBar({processType, setProcessType }) {
 
 
   return (
-    <ul className="flex justify-around w-[70%] text-center m-auto p-4 dark-color1 rounded-lg font-bold text-md">
+    <ul className="flex justify-around w-[70%] text-center m-auto p-2 dark-color1 rounded-lg font-bold text-md">
       <li
         onClick={(e) => {
           setProcessType("encryption");
