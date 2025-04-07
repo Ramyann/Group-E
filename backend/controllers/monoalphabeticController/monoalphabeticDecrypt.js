@@ -1,7 +1,6 @@
 const decryptMonoalphabetic = async (req, res) => {
   const { inputText, mappings } = req.body;
 
- console.log(inputText, mappings)
   try {
     // Build reverse mapping from substituted letter → original letter
     const reverseKeys = {};
