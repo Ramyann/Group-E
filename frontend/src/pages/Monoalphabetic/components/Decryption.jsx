@@ -1,46 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Input, Typography, Space, Card, Button, Spin, message } from "antd";
+import {
+  Select,
+  Typography,
+  Space,
+  Card,
+  Row,
+  Button,
+  Spin,
+  message,
+} from "antd";
+import { useSelector } from "react-redux";
 
 const { Text, Paragraph } = Typography;
-const { TextArea } = Input;
-
-const formatKeysForDisplay = (keys) => {
-  if (!keys || typeof keys !== "object" || Object.keys(keys).length === 0) {
-    return <Text type="secondary">Keys not available or not recovered.</Text>;
-  }
-
-  const sortedEntries = Object.entries(keys).sort(([keyA], [keyB]) =>
-    keyA.localeCompare(keyB)
-  );
-
-  return (
-    <Paragraph style={{ fontFamily: "monospace", lineHeight: "1.8" }}>
-      {sortedEntries.map(([cipherLetter, plainLetter]) => (
-        <span
-          key={cipherLetter}
-          style={{
-            padding: "8px",
-            marginRight: "15px",
-            display: "inline-block",
-            whiteSpace: "nowrap",
-          }}
-        >
-          <Text code style={{ fontSize: "20px" }}>
-            {cipherLetter.toUpperCase()}
-          </Text>
-          {" \u2192 "} {/* Unicode Right Arrow */}
-          <Text
-            code
-            style={{ color: "#1890ff", fontWeight: "bolder", fontSize: "20px" }}
-          >
-            {plainLetter.toLowerCase()}
-          </Text>
-        </span>
-      ))}
-    </Paragraph>
-  );
-};
+const { Option } = Select;
 
 const Decryption = () => {
   const {
@@ -48,59 +21,69 @@ const Decryption = () => {
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isSubmitting },
+    register,
+    formState: { isSubmitting },
   } = useForm({
     defaultValues: {
-      ciphertext: "",
+      inputText: "",
+      mappings: {},
     },
   });
+  const user = useSelector((state) => state.user.user);
 
-  const [decryptedText, setDecryptedText] = useState("");
-  const [recoveredKeys, setRecoveredKeys] = useState(null);
+  const [encryptedText, setEncryptedText] = useState("");
+  const watchedInputText = watch("inputText", "");
+  // const watchedMappings = watch("mappings", {});
 
-  const watchedCiphertext = watch("ciphertext", "");
+  const alphabet = useMemo(() => "abcdefghijklmnopqrstuvwxyz".split(""), []);
+
+  const uniqueLetters = useMemo(() => {
+    const lettersOnly = watchedInputText.toLowerCase().match(/[a-z]/g);
+    if (!lettersOnly) return [];
+
+    const unique = [...new Set(lettersOnly)];
+    return unique.sort();
+  }, [watchedInputText]);
 
   const handleFormSubmit = async (data) => {
-    setDecryptedText("");
-    setRecoveredKeys(null);
-
-    const payload = {
-      ciphertext: data.ciphertext,
-    };
+    setEncryptedText("");
 
     try {
       const response = await fetch(
         "http://localhost:5000/api/monoalphabetic/decrypt",
         {
-          body: JSON.stringify(payload),
+          body: JSON.stringify(data),
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${user?.token}`,
           },
         }
       );
 
       const resultData = await response.json();
 
-      console.log(resultData)
-
-      setDecryptedText(resultData.plainText);
-      setRecoveredKeys(resultData.key || null);
-      message.success("Text decrypted successfully!");
+      if (resultData && typeof resultData.plaintext !== "undefined") {
+        setEncryptedText(resultData.plaintext);
+        message.success("Text encrypted successfully!");
+      } else {
+        throw new Error("Invalid response structure from server.");
+      }
     } catch (err) {
-      console.error("Decryption failed:", err);
-      message.error(`Decryption failed: ${err.message}`);
-      setDecryptedText("");
-      setRecoveredKeys(null);
+      console.error("Encryption failed:", err);
+      const errorMsg = err.message || "An unknown error occurred.";
+      message.error(`Encryption failed: ${errorMsg}`);
     }
   };
 
   useEffect(() => {
-    if (watchedCiphertext === "") {
-      setDecryptedText("");
-      setRecoveredKeys(null);
+    if (watchedInputText === "") {
+      setEncryptedText("");
+      setValue("mappings", {}, { shouldValidate: false, shouldDirty: false });
+    } else {
+      setEncryptedText("");
     }
-  }, [watchedCiphertext]);
+  }, [watchedInputText, setValue]);
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
@@ -110,78 +93,112 @@ const Decryption = () => {
         style={{ display: "flex", overflow: "hidden auto", height: "50vh" }}
       >
         <Card
-          title="1. Enter Ciphertext"
+          title="1. Enter Plain Text & Define Key"
           style={{ maxWidth: 900, margin: "auto" }}
         >
           <Space direction="vertical" style={{ width: "100%" }} size="middle">
-            <Controller
-              name="ciphertext"
-              control={control}
-              rules={{ required: "Ciphertext input cannot be empty." }}
-              render={({ field }) => (
-                <TextArea
-                  {...field}
-                  rows={6}
-                  placeholder="Enter or paste the ciphertext you want to decrypt..."
-                  style={{ fontSize: "16px", lineHeight: "1.5" }}
-                />
-              )}
+            <input
+              {...register("inputText")}
+              type="text"
+              id=""
+              className="w-full border rounded-lg"
+              placeholder="Enter text here..."
             />
-            {errors.ciphertext && (
-              <Text type="danger">{errors.ciphertext.message}</Text>
+
+            {uniqueLetters.length > 0 && (
+              <div>
+                <Text strong>Generate Your Key (Map letters):</Text>
+                <div
+                  style={{
+                    marginTop: "10px",
+                    maxHeight: "200px",
+                    overflowY: "auto",
+                    paddingRight: "10px",
+                  }}
+                >
+                  <Row gutter={[16, 16]}>
+                    {uniqueLetters.map((letter) => (
+                      <div key={letter}>
+                        <div className="flex items-center gap-x-1">
+                          <Text code style={{ fontSize: "22px" }}>
+                            {letter}
+                          </Text>
+                          <Controller
+                            name={`mappings.${letter}`}
+                            control={control}
+                            render={({ field }) => {
+                              return (
+                                <Select
+                                  {...field}
+                                  showSearch
+                                  allowClear
+                                  placeholder="Map"
+                                  style={{ width: 80, height: 30 }}
+                                  optionFilterProp="children"
+                                  filterOption={(input, option) =>
+                                    option.children
+                                      .toLowerCase()
+                                      .includes(input.toLowerCase())
+                                  }
+                                  disabled={isSubmitting}
+                                  onChange={(value) => {
+                                    field.onChange(value);
+                                  }}
+                                  onClear={() => {
+                                    field.onChange(undefined);
+                                  }}
+                                >
+                                  {alphabet.map((alphaLetter) => (
+                                    <Option
+                                      key={alphaLetter}
+                                      value={alphaLetter}
+                                    >
+                                      {alphaLetter}
+                                    </Option>
+                                  ))}
+                                </Select>
+                              );
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </Row>
+                </div>
+              </div>
             )}
 
             <Button
+              {...register("button")}
               type="primary"
               htmlType="submit"
               loading={isSubmitting}
-              disabled={isSubmitting || !watchedCiphertext.trim()}
+              // disabled={!isMappingComplete || watchedInputText.trim() === ""}
               style={{ marginTop: "15px" }}
             >
-              Decrypt Text
+              Encrypt Text
             </Button>
           </Space>
         </Card>
 
-        {(isSubmitting ||
-          decryptedText ||
-          recoveredKeys) && (
-          <Card
-            title="2. Decryption Result"
-            style={{ maxWidth: 900, margin: "auto" }}
-          >
-            <Spin spinning={isSubmitting} tip="Decrypting...">
-              {!isSubmitting && (
-                <Space direction="vertical" style={{ width: "100%" }}>
-                  <div>
-                    <Text strong>Detected Language: </Text>
-                  </div>
-
-                  <div>
-                    <Text strong>Recovered Keys (Cipher - Plain):</Text>
-                    {formatKeysForDisplay(recoveredKeys)}
-                  </div>
-
-                  <div>
-                    <Text strong>Decrypted Plaintext:</Text>
-                    <Paragraph
-                      copyable={{ tooltips: ["Copy", "Copied!"] }}
-                      style={{
-                        marginTop: "5px",
-                        background: "#f5f5f5",
-                        padding: "10px",
-                        borderRadius: "4px",
-                        whiteSpace: "pre-wrap",
-                        wordBreak: "break-word",
-                        minHeight: "50px",
-                      }}
-                    >
-                      {decryptedText || (
-                        <Text type="secondary">No plaintext generated.</Text>
-                      )}
-                    </Paragraph>
-                  </div>
-                </Space>
+        {(isSubmitting || encryptedText) && (
+          <Card title="2. Result" style={{ maxWidth: 900, margin: "auto" }}>
+            <Spin spinning={isSubmitting} tip="Encrypting...">
+              {encryptedText && (
+                <div>
+                  <Text strong>Encrypted Text:</Text>
+                  <Paragraph
+                    copyable={{ tooltips: ["Copy", "Copied!"] }}
+                    style={{
+                      marginTop: "5px",
+                      background: "#f5f5f5",
+                      padding: "10px",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    {encryptedText}
+                  </Paragraph>
+                </div>
               )}
             </Spin>
           </Card>
