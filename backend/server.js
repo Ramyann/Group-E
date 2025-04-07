@@ -8,6 +8,7 @@ const ceaserRoutes = require("./routes/ceaserRoute");
 const userRoute = require("./routes/userRoute");
 const monoalphabeticRoutes = require("./routes/monoalphabeticRoute");
 const playfairRoutes = require("./routes/playfairRoute");
+const hillRoutes = require("./routes/hillRoute");
 
 require("dotenv").config();
 
@@ -23,6 +24,7 @@ app.use("/api/user", userRoute);
 app.use("/api/ceaser", ceaserRoutes);
 app.use("/api/monoalphabetic", monoalphabeticRoutes);
 app.use("/api/playfair", playfairRoutes);
+app.use("/api/hill", hillRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
