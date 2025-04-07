@@ -12,7 +12,6 @@ function Ceaser({}) {
 
   return (
     <div className="sunrise-color h-[80%] p-6 rounded-lg shadow-md w-[65%] overflow-hidden">
-     
       <span className="flex items-center gap-x-4  mb-8">
         <h2 className="text-3xl font-bold text-white ">Caesar Cipher</h2>
         <Hint
@@ -20,7 +19,16 @@ function Ceaser({}) {
         />
       </span>
 
-      <MenuBar processType={processType} setProcessType={setProcessType} />
+      <MenuBar
+        processType={processType}
+        setProcessType={setProcessType}
+        processes={{
+          encryption: true,
+          decryption: true,
+          cryptoanalysis:false,
+          bruteForce: true,
+        }}
+      />
 
       {processType == "encryption" ? (
         <Encryption ciphertext={ciphertext} setCiphertext={setCiphertext} />

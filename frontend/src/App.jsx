@@ -12,6 +12,8 @@ import Monoalphabetic from "./pages/Monoalphabetic";
 import { logoutUser } from "./context/slices/userSlice.js";
 import Layout from "./Layout.jsx";
 import Login from "./pages/Login";
+import Playfair from "./pages/Playfair/Playfair.jsx";
+import HillCiphering from "./pages/HillCiphering/HillCiphering";
 
 function App() {
   const user = useSelector((state) => state.user.user);
@@ -43,8 +45,8 @@ function App() {
         >
           <Route index element={<Ceaser />} />
           <Route path="monoalphabetic" element={<Monoalphabetic />} />
-          <Route path="palyfair" element={<Monoalphabetic />} />
-          <Route path="hillciphering" element={<Monoalphabetic />} />
+          <Route path="playfair" element={<Playfair />} />
+          <Route path="hillciphering" element={<HillCiphering />} />
           <Route path="polyalphabetic" element={<Monoalphabetic />} />
         </Route>
       ) : (

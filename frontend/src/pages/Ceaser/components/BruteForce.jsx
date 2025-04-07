@@ -1,60 +1,173 @@
-import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Table, Button, Spin, Tag, Modal, Alert } from "antd";
+import { useSelector } from "react-redux";
+import { performBruteForceAttack } from "../../../dist/attackerHelper";
 
-function BruteForce({ ciphertext, setCiphertext }) {
-  const [attackResults, setAttackResults] = useState([]);
+function BruteForce() {
+  const user = useSelector((state) => state.user.user);
+  const [userList, setUserList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
 
-  const handleAttack = async () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState("");
+  const [loadingRowKey, setLoadingRowKey] = useState(null);
+  const [attackTargetName, setAttackTargetName] = useState("");
+
+  const handleAttack = async (record) => {
+    const { email, encryptedPassword, name, key } = record;
+
+    setLoadingRowKey(key);
+    setAttackTargetName(name);
+    setModalContent("");
+
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/caesar/attack",
-        { ciphertext }
-      );
-
-      console.log(response.data);
-      setAttackResults(response.data.results);
-    } catch (error) {
-      console.error("Attack error:", error);
+      const result = await performBruteForceAttack(email, encryptedPassword, name);
+      setModalContent(result.message || "No response message.");
+    } catch (err) {
+      setModalContent("Error during attack. Check console for details.");
+      console.error("Attack error:", err);
     }
+
+    setIsModalVisible(true);
+    setLoadingRowKey(null);
   };
 
-  return (
-    <div className="space-y-4">
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+  };
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Ciphertext
-        </label>
-        <input
-          type="text"
-          defaultValue={ciphertext}
-          onChange={(e) => {
-            setCiphertext(e.target.value);
-          }}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100"
+  const columns = [
+    { title: "Email", dataIndex: "email", key: "email" },
+    {
+      title: "Encrypted Password",
+      dataIndex: "encryptedPassword",
+      key: "encryptedPassword",
+      render: (text) =>
+        text ? <Tag color="volcano">{text}</Tag> : <Tag>N/A</Tag>,
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <Button
+          type="primary"
+          danger
+          onClick={() => handleAttack(record)}
+          loading={loadingRowKey === record.key}
+          disabled={loadingRowKey !== null}
+        >
+          {loadingRowKey === record.key ? "Attacking..." : "Brute Force"}
+        </Button>
+      ),
+    },
+  ];
+
+  const renderContent = () => {
+    if (!user?.token) {
+      return (
+        <Alert
+          message="Info"
+          description="Please log in to view users."
+          type="info"
+          showIcon
+          className="mb-4"
         />
-      </div>
+      );
+    }
 
-      <button
-        onClick={handleAttack}
-        className="success-color text-white px-4 py-2 rounded-md hover:bg-red-600"
+    if (isLoading) {
+      return <Spin tip="Loading users..." size="large" className="block my-4" />;
+    }
+
+    if (fetchError) {
+      return (
+        <Alert
+          message="Error"
+          description={fetchError}
+          type="error"
+          showIcon
+          className="mb-4"
+        />
+      );
+    }
+
+    if (userList.length === 0) {
+      return <p>No user data available.</p>;
+    }
+
+    return (
+      <Table
+        columns={columns}
+        dataSource={userList}
+        rowKey="key"
+        bordered
+        pagination={false}
+      />
+    );
+  };
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setIsLoading(true);
+      setFetchError(null);
+
+      try {
+        const res = await fetch("http://localhost:5000/api/user/users", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch users");
+
+        const data = await res.json();
+        const mapped = Array.isArray(data)
+          ? data.map((u) => ({
+              ...u,
+              key: u._id || u.email || Math.random().toString(36),
+            }))
+          : [];
+
+        setUserList(mapped);
+      } catch (err) {
+        setFetchError(err.message || "Unknown error while fetching users.");
+      }
+
+      setIsLoading(false);
+    };
+
+    if (user?.token) {
+      fetchUsers();
+    }
+  }, [user]);
+
+  return (
+    <div className="space-y-6 p-4 h-[50vh] overflow-y-auto">
+      {renderContent()}
+
+      <Modal
+        title={
+          <span className="font-semibold">
+            {`Attack Result for: ${attackTargetName || "User"}`}
+          </span>
+        }
+        open={isModalVisible}
+        onOk={handleModalClose}
+        onCancel={handleModalClose}
+        footer={[
+          <Button key="ok" type="primary" onClick={handleModalClose}>
+            Close
+          </Button>,
+        ]}
+        destroyOnClose
       >
-        Brute Force Attack
-      </button>
-
-
-      {attackResults?.length > 0 && (
-        <div className="[&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:rounded-full dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500 h-42 bg-[#F5F9FC] rounded-md p-2 overflow-x-hidden overflow-y-auto">
-          <h3 className="text-lg font-semibold mb-2">Attack Results</h3>
-          <ul className="space-y-2">
-            {attackResults?.map((result, index) => (
-              <li key={index} className="text-sm text-gray-700">
-                Shift {result.shift}: {result.plaintext}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+        <p className="text-gray-800 mt-4 p-2 bg-gray-50 rounded whitespace-pre-wrap">
+          {modalContent}
+        </p>
+      </Modal>
     </div>
   );
 }
