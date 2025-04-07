@@ -10,6 +10,7 @@ import {
   Spin,
   message,
 } from "antd";
+import { useSelector } from "react-redux";
 
 const { Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -28,6 +29,7 @@ const Encryption = () => {
       mappings: {},
     },
   });
+  const user = useSelector((state) => state.user.user);
 
   const [encryptedText, setEncryptedText] = useState("");
   const watchedInputText = watch("inputText", "");
@@ -59,6 +61,7 @@ const Encryption = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${user?.token}`,
           },
         }
       );

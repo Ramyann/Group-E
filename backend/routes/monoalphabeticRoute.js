@@ -10,11 +10,13 @@ const {
 } = require("../controllers/monoalphabeticController/monoalphabeticEncrypt");
 
 const {
-  attackMonoalphabetic,
-} = require("../controllers/monoalphabeticController/monoalphabeticAttack");
+  cryptoanalysisMonoalphabetic,
+} = require("../controllers/monoalphabeticController/monoalphabeticCryptoanalysis");
 
-router.post("/decrypt", requireAuth, decryptMonoalphabetic);
-router.post("/encrypt", requireAuth, encryptMonoalphabetic);
-router.post("/attack", requireAuth, attackMonoalphabetic);
+router.use(requireAuth);
+
+router.post("/decrypt", decryptMonoalphabetic);
+router.post("/encrypt", encryptMonoalphabetic);
+router.post("/attack", cryptoanalysisMonoalphabetic);
 
 module.exports = router;

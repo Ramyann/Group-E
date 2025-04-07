@@ -4,9 +4,9 @@ import MenuBar from "../../components/MenuBar";
 import Encryption from "./components/Encryption";
 import Decryption from "./components/Decryption";
 import BruteForce from "../Ceaser/components/BruteForce";
+import Cryptoanalysis from "./components/Cryptoanalysis";
 
 function Monoalphabetic({}) {
-  const [ciphertext, setCiphertext] = useState("");
 
   const [processType, setProcessType] = useState("encryption");
 
@@ -21,16 +21,22 @@ function Monoalphabetic({}) {
         />
       </span>
 
-      <MenuBar processType={processType} setProcessType={setProcessType} />
+      <MenuBar processType={processType} setProcessType={setProcessType}  processes={{
+          encryption: true,
+          decryption: true,
+          cryptoanalysis:true,
+          bruteForce: false,
+        }} />
 
-      {processType == "encryption" ? (
-        <Encryption ciphertext={ciphertext} setCiphertext={setCiphertext} />
-      ) : processType == "decryption" ? (
-        <Decryption ciphertext={ciphertext} setCiphertext={setCiphertext} />
-      ) : (
-        ""
-        // <BruteForce ciphertext={ciphertext} setCiphertext={setCiphertext} />
-      )}
+       {processType == "encryption" ? (
+            <Encryption />
+          ) : processType == "decryption" ? (
+            <Decryption />
+          ) : processType == "cryptoanalysis" ? (
+            <Cryptoanalysis />
+          ) : (
+            <BruteForce />
+          )}
     </div>
   );
 }
