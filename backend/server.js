@@ -8,7 +8,8 @@ const ceaserRoutes = require("./routes/ceaserRoute");
 const monoalphabeticRoutes = require("./routes/monoalphabeticRoute");
 const playfairRoutes = require("./routes/playfairRoute");
 const hillRoutes = require("./routes/hillRoute");
-const bruteforcesRoutes = require('./routes/bruteforcesRoute')
+const desRoutes = require("./routes/desRoute");
+const bruteforcesRoutes = require("./routes/bruteforcesRoute");
 
 require("dotenv").config();
 
@@ -25,7 +26,8 @@ app.use("/api/monoalphabetic", monoalphabeticRoutes);
 
 app.use("/api/playfair", playfairRoutes);
 app.use("/api/hill", hillRoutes);
-app.use('/api/bruteforces',bruteforcesRoutes)
+app.use("/api/des", desRoutes);
+app.use("/api/bruteforces", bruteforcesRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const requireAuth = require('../middleware/requireAuth'); 
+const requireAuth = require("../middleware/requireAuth");
 
 const {
-  caesarAttack,
   caesarDecrypt,
   caesarEncrypt,
 } = require("../controllers/ceaser/ceaserController");
