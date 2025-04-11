@@ -3,8 +3,8 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
-const ceaserRoutes = require("./routes/ceaserRoute");
 const userRoute = require("./routes/userRoute");
+const ceaserRoutes = require("./routes/ceaserRoute");
 const monoalphabeticRoutes = require("./routes/monoalphabeticRoute");
 const playfairRoutes = require("./routes/playfairRoute");
 const hillRoutes = require("./routes/hillRoute");
@@ -19,8 +19,10 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use("/api/user", userRoute);
+
 app.use("/api/ceaser", ceaserRoutes);
 app.use("/api/monoalphabetic", monoalphabeticRoutes);
+
 app.use("/api/playfair", playfairRoutes);
 app.use("/api/hill", hillRoutes);
 app.use('/api/bruteforces',bruteforcesRoutes)
