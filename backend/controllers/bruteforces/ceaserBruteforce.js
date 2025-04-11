@@ -1,65 +1,85 @@
 const Bruteforce = require("../../models/bruteforceModel");
 
-const getCeaserUsers = async (req, res) => {
+const ALPHABET = "abcdefghijklmnopqrstuvwxyz";
+
+// Utility function to decrypt a string using Caesar cipher
+const decryptCaesar = (text, shift) => {
+  return text
+    .split("")
+    .map((char) => {
+      const isUpperCase = char === char.toUpperCase();
+      const lowerChar = char.toLowerCase();
+      const index = ALPHABET.indexOf(lowerChar);
+
+      if (index === -1) return char; // Non-alphabetic characters remain unchanged
+
+      const shiftedIndex = (index - shift + 26) % 26;
+      const decryptedChar = ALPHABET[shiftedIndex];
+      return isUpperCase ? decryptedChar.toUpperCase() : decryptedChar;
+    })
+    .join("");
+};
+
+// Get users with Caesar encryption
+const getCaesarUsers = async (req, res) => {
   try {
-    const users = await Bruteforce.find({ encryption_algorithm: "ceaser" }).select("email");
-    res.status(200).json({ users });
+    const users = await Bruteforce.find({
+      encryption_algorithm: "caesar",
+    }).select("email");
+    res.status(200).json({ success: true, users });
   } catch (error) {
-    console.error("error fetching Ceaser users", error);
-    res.status(400).json({ message: error.message });
+    console.error("Error fetching Caesar users:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch users." });
   }
 };
-
-
-// Decrypt a string using byte-wise Caesar shift
-const encryptAlphabet = (shift) => {
-  const alphabet = "abcdefghijklmnopqrstuvwxyz";
-  const shifted = alphabet
-    .split("")
-    .map((_, i) => alphabet[(i + shift) % 26])
-    .join("");
-  return shifted;
-};
-
 
 // Brute-force attack endpoint
 const caesarBruteforce = async (req, res) => {
   try {
     const { email } = req.body;
 
+    if (!email) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email is required." });
+    }
+
     const user = await Bruteforce.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
     }
 
     const encryptedPassword = user.password;
-    const alphabet = "abcdefghijklmnopqrstuvwxyz";
 
     for (let shift = 1; shift <= 25; shift++) {
-      const attempt = encryptAlphabet(shift);
+      const decryptedPassword = decryptCaesar(encryptedPassword, shift);
 
-      if (attempt.toLowerCase() === encryptedPassword.toLowerCase()) {
+      if (decryptedPassword.toLowerCase() === encryptedPassword.toLowerCase()) {
         return res.status(200).json({
-          message: "Password decrypted",
+          success: true,
+          message: "Password decrypted successfully.",
           shift,
-          decrypted: alphabet,
-          encrypted: attempt,
-          user: {
-            email: user.email,
-          },
+          decryptedPassword,
+          user: { email: user.email },
         });
       }
     }
 
-    return res.status(400).json({ message: "No matching Caesar shift found" });
+    return res
+      .status(400)
+      .json({ success: false, message: "No matching Caesar shift found." });
   } catch (error) {
     console.error("Error during Caesar brute-force:", error);
-    return res.status(500).json({
-      message: "Internal server error during Caesar attack.",
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Internal server error during Caesar attack.",
+      });
   }
 };
 
-
-module.exports = { caesarBruteforce, getCeaserUsers };
+module.exports = { caesarBruteforce, getCaesarUsers };
