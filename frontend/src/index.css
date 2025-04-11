@@ -95,3 +95,34 @@ input:focus{
 	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
 	background-color: #555;
 }
+
+.custom-modal .ant-modal-content {
+  border-radius: 12px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.custom-modal .ant-modal-header {
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  background-color: #f0f2f5;
+}
+
+.custom-modal .ant-modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.custom-modal .ant-modal-body {
+  padding: 24px;
+  font-size: 16px;
+  color: #555;
+}
+
+.custom-modal .ant-modal-footer {
+  border-top: none;
+  padding: 16px 24px;
+  background-color: #f0f2f5;
+  border-radius: 0 0 12px 12px;
+}

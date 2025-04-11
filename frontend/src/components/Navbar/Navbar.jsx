@@ -42,8 +42,22 @@ const Navbar = ({}) => {
         Polyalphabetic
       </Link>
 
+      <Link
+        to="/DES"
+        className="text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-sm font-medium"
+      >
+        DES
+      </Link>
+
+      <Link
+        to="/Brute-force"
+        className="text-gray-800 hover:text-gray-600 px-3 py-2 rounded-md text-sm font-medium"
+      >
+        Brute Forces
+      </Link>
+
       <button
-        className="cursor-pointer font-bold bg-red-500 p-2 rounded-sm text-white"
+        className="cursor-pointer font-bold bg-red-500 p-4 rounded-sm text-white fixed right-20 top-6"
         onClick={() => dispatch(logoutUser())}
       >
         Logout

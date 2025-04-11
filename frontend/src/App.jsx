@@ -14,6 +14,7 @@ import Layout from "./Layout.jsx";
 import Login from "./pages/Login";
 import Playfair from "./pages/Playfair/Playfair.jsx";
 import HillCiphering from "./pages/HillCiphering/HillCiphering";
+import Bruteforces from './pages/Bruteforces'
 
 function App() {
   const user = useSelector((state) => state.user.user);
@@ -48,6 +49,7 @@ function App() {
           <Route path="playfair" element={<Playfair />} />
           <Route path="hillciphering" element={<HillCiphering />} />
           <Route path="polyalphabetic" element={<Monoalphabetic />} />
+          <Route path="Brute-force" element={<Bruteforces />} />
         </Route>
       ) : (
         <Route path="*" element={<Login />} />

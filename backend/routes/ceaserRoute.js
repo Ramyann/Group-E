@@ -16,7 +16,4 @@ router.post("/encrypt", caesarEncrypt);
 // Caesar Cipher Decryption
 router.post("/decrypt", caesarDecrypt);
 
-// Caesar Cipher Brute Force Attack
-router.post("/attack", caesarAttack);
-
 module.exports = router;

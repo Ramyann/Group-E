@@ -25,17 +25,15 @@ function Ceaser({}) {
         processes={{
           encryption: true,
           decryption: true,
-          cryptoanalysis:false,
-          bruteForce: true,
+          cryptoanalysis: false,
+          bruteForce: false,
         }}
       />
 
       {processType == "encryption" ? (
         <Encryption ciphertext={ciphertext} setCiphertext={setCiphertext} />
-      ) : processType == "decryption" ? (
-        <Decryption ciphertext={ciphertext} setCiphertext={setCiphertext} />
       ) : (
-        <BruteForce ciphertext={ciphertext} setCiphertext={setCiphertext} />
+        <Decryption ciphertext={ciphertext} setCiphertext={setCiphertext} />
       )}
     </div>
   );
