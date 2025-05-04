@@ -3,6 +3,7 @@ const encryptMonoalphabetic = async (req, res) => {
 
   try {
     let ciphertext = "";
+    
     for (const originalChar of plainText) {
       const lowerChar = originalChar.toLowerCase();
       const isBasicLetter = lowerChar >= "a" && lowerChar <= "z";
